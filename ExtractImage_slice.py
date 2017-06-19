@@ -77,7 +77,6 @@ postGadlist = open(postGadlist_n, 'r').readlines()
 #Generate 1000 points 100 in each direction 
 #Generate  one numpy file containing 3000 lines per subject
 
-count = 0
 for preGad_file_name, postGad_file_name in zip(preGadlist, postGadlist):
     print(preGad_file_name.strip('\n'))
     print(postGad_file_name.strip('\n'))
@@ -102,9 +101,3 @@ for preGad_file_name, postGad_file_name in zip(preGadlist, postGadlist):
         postGad_patch_matrix_full[start_idx:end_idx,] = postGad_patch
     np.savetxt(numpy_file_pre, preGad_patch_matrix_full, fmt = "%.3f")
     np.savetxt(numpy_file_post, postGad_patch_matrix_full, fmt = "%.3f")
-
-    count = count + 1
-    if (count > 2):
-        sys.exit(1)
-
-

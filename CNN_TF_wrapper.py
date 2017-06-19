@@ -8,20 +8,24 @@ import numpy as np
 import tensorflow as tf
 
 class Convolution2d(object):
-    def __init__(self, input, input_size, in_ch, out_ch, patch_size, activation='relu'):
+    def __init__(self, input, input_size, in_ch, out_ch, patch_size, activation='relu',  name_conv='name_conv'):
         self.input = input
         self.rows = input_size[0]
         self.cols = input_size[1]
         self.in_ch = in_ch
         self.activation = activation
         wshape = [patch_size[0], patch_size[1], in_ch, out_ch] 
-        w_cv = tf.Variable(tf.truncated_normal(wshape, stddev = 0.1), trainable='True')
-        b_cv = tf.Variable(tf.constant(0.1, shape=[out_ch]), trainable= 'True')
+        
+        with tf.name_scope(name_conv) as scope:
+            w_cv = tf.Variable(tf.truncated_normal(wshape, stddev = 0.1), trainable='True', name = 'Weights')
+            b_cv = tf.Variable(tf.constant(0.1, shape=[out_ch]), trainable= 'True', name = 'Biases')
         self.w = w_cv
         self.b = b_cv
 
         self.params = [self.w, self.b]
-
+        tf.summary.histogram("weights", w_cv)
+        tf.summary.histogram("Biases", b_cv)    
+    
     def output(self):
         shape4d = [-1, self.rows, self.cols, self.in_ch ] 
         x_image = tf.reshape(self.input, shape4d)
@@ -38,7 +42,7 @@ class Convolution2d(object):
    
  
 class Conv2DTranspose(object):
-    def __init__(self, input, output_size, in_ch, out_ch, patch_size, activation='relu'):
+    def __init__(self, input, output_size, in_ch, out_ch, patch_size, activation='relu', name_conv='name_conv'):
         self.input = input
         self.rows  = output_size[0]
         self.cols  = output_size[1]
@@ -46,9 +50,12 @@ class Conv2DTranspose(object):
         self.activation = activation 
 
         wshape = [patch_size[0], patch_size[1], out_ch , in_ch]
-        w_cvt = tf.Variable(tf.truncated_normal(wshape, stddev = 0.1), trainable = True)
-        b_cvt = tf.Variable(tf.constant(0.1, shape = [out_ch]), trainable = True)
-        
+        with tf.name_scope(name_conv) as scope:
+            w_cvt = tf.Variable(tf.truncated_normal(wshape, stddev = 0.1), trainable = True, name = 'Weights')
+            b_cvt = tf.Variable(tf.constant(0.1, shape = [out_ch]), trainable = True, name = 'Biases')
+         
+        tf.summary.histogram("weights", w_cvt)
+        tf.summary.histogram("Biases", b_cvt)    
         self.batsize = tf.shape(input)[0]
         self.w = w_cvt
         self.b = b_cvt
